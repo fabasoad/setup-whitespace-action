@@ -4,15 +4,6 @@ default_stages: ["commit", "push"]
 minimum_pre_commit_version: 2.18.0
 exclude: ^helloworld\.ws$
 repos:
-  - repo: local
-    hooks:
-      - id: build
-        name: Build
-        entry: make build
-        language: system
-        pass_filenames: false
-        verbose: true
-        stages: ["push"]
   # Security
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
