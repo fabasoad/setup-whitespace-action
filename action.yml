@@ -55,7 +55,12 @@ runs:
     - name: Prepare script
       if: ${{ steps.metadata.outputs.to-install == 'true' }}
       run: |
-        cp ../../src/wspace .
-        echo "$(pwd)" >> "$GITHUB_PATH"
+        if [ "${RUNNER_OS}" = "Windows" ]; then
+          ./build.bat
+        else
+          ./build.sh
+        fi
+        cp ../../src/wspace ./bin
+        echo "$(pwd)/bin" >> "$GITHUB_PATH"
       shell: sh
       working-directory: "${{ github.workspace }}/Romejanic/Whitespace"
