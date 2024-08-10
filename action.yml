@@ -55,8 +55,7 @@ runs:
     - name: Prepare script
       if: ${{ steps.metadata.outputs.to-install == 'true' }}
       run: |
-        mkdir bin
-        cp ../../src/wspace ./bin
-        echo "$(pwd)/bin" >> "$GITHUB_PATH"
+        cp ../../src/wspace .
+        echo "$(pwd)" >> "$GITHUB_PATH"
       shell: sh
       working-directory: "${{ github.workspace }}/Romejanic/Whitespace"
