@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 fabasoad_validate_enum() {
   param_key="${1}"
@@ -15,7 +15,7 @@ fabasoad_validate_enum() {
 }
 
 ## export
-if [[ ${BASH_SOURCE[0]} != $0 ]]; then
+if [ ${BASH_SOURCE[0]} != $0 ]; then
   export -f fabasoad_validate_enum
 else
   fabasoad_validate_enum "${@}"
