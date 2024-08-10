@@ -1,0 +1,27 @@
+---
+name: Functional Tests (Remote)
+
+on: # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - main
+
+defaults:
+  run:
+    shell: sh
+
+jobs:
+  run-script:
+    name: Run script
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu", "macos", "windows"]
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+      - name: Setup Whitespace
+        uses: fabasoad/setup-whitespace-action@main
+      - name: Validate script
+        run: |
+          [ "$(wspace helloworld.ws)" = "Hello, World!" ] || exit 1;

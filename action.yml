@@ -1,0 +1,67 @@
+---
+name: Setup Whitespace
+author: Yevhen Fabizhevskyi
+description: This action sets up Whitespace programming language interpreter.
+branding:
+  icon: terminal
+  color: gray-dark
+inputs:
+  force:
+    description: |
+      If "true" it installs wspace even if it is already installed on a runner.
+      Otherwise, skips installation.
+    default: "false"
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Validate inputs
+      id: validate-inputs
+      env:
+        INPUT_FORCE: "${{ inputs.force }}"
+      run: ./validate-inputs.sh "${INPUT_FORCE}"
+      shell: sh
+      working-directory: ${{ github.action_path }}/src
+    - name: Prepare metadata
+      id: metadata
+      env:
+        INPUT_FORCE: "${{ inputs.force }}"
+      run: |
+        to_install="false"
+        if [ "${INPUT_FORCE}" = "true" ] || ! command -v wspace >/dev/null 2>&1; then
+          to_install="true"
+        fi
+        echo "to-install=${to_install}" >> "$GITHUB_OUTPUT"
+
+        java_installed="false"
+        if command -v java >/dev/null 2>&1; then
+          java_installed="true"
+        fi
+        echo "java-installed=${java_installed}" >> "$GITHUB_OUTPUT"
+      shell: sh
+    - name: Setup Java
+      if: ${{ steps.metadata.outputs.java-installed == 'false' }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: "24"
+        distribution: "temurin"
+        java-package: "jre"
+    - name: Checkout Romejanic/Whitespace
+      if: ${{ steps.metadata.outputs.to-install == 'true' }}
+      uses: actions/checkout@v4
+      with:
+        repository: "Romejanic/Whitespace"
+        path: "Romejanic/Whitespace"
+    - name: Prepare script
+      if: ${{ steps.metadata.outputs.to-install == 'true' }}
+      run: |
+        if [ "${RUNNER_OS}" = "Windows" ]; then
+          ./build.bat
+        else
+          ./build.sh
+        fi
+        echo "WHITESPACE_JAR_PATH=$(pwd)/Whitespace.jar" >> "$GITHUB_ENV"
+        cp ../../src/wspace ./bin
+        echo "$(pwd)/bin" >> "$GITHUB_PATH"
+      shell: sh
+      working-directory: "${{ github.workspace }}/Romejanic/Whitespace"
