@@ -60,7 +60,7 @@ runs:
         else
           ./build.sh
         fi
-        echo "WHITESPACE_JAR_PATH=$(pwd)/bin/Whitespace.jar" >> "$GITHUB_ENV"
+        echo "WHITESPACE_JAR_PATH=$(pwd)/Whitespace.jar" >> "$GITHUB_ENV"
         cp ../../src/wspace ./bin
         echo "$(pwd)/bin" >> "$GITHUB_PATH"
       shell: sh
