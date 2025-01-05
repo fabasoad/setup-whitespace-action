@@ -1,5 +1,17 @@
 #!/usr/bin/env sh
 
+# Validates value to be a non-empty string.
+# Parameters:
+# 1. (Required) Param name to display it correctly in the error message for the
+#    users.
+# 2. (Required) Param value that will be validated.
+check_is_not_empty() {
+  if [ -z "${2}" ]; then
+    echo "::error title=Invalid parameter::\"${1}\" parameter is empty."
+    exit 30
+  fi
+}
+
 # Validates string to be one of the possible values (emulating enum data type).
 # Parameters:
 # 1. (Required) Param name to display it correctly in the error message for the
@@ -17,15 +29,17 @@ check_enum() {
     *)
       msg="\"${1}\" parameter is invalid. Possible values: $(echo "${3}" | sed 's/,/, /g')."
       echo "::error title=Invalid parameter::${msg}"
-      exit 30
+      exit 1
       ;;
   esac
 }
 
 main() {
   input_force="${1}"
+  input_github_token="${2}"
 
   check_enum "force" "${input_force}" "true,false"
+  check_is_not_empty "github-token" "${input_github_token}"
 }
 
 main "$@"
