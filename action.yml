@@ -63,7 +63,7 @@ runs:
         token: "${{ inputs.github-token }}"
 
     - name: Download wspace
-      if: ${{ steps.metadata.outputs.bin-installed == 'false' }}
+      if: ${{ steps.info.outputs.bin-installed == 'false' }}
       uses: actions/checkout@v4
       with:
         repository: "Romejanic/Whitespace"
@@ -71,7 +71,7 @@ runs:
         path: "${{ steps.info.outputs.bin-dir }}"
 
     - name: Install wspace
-      if: ${{ steps.metadata.outputs.bin-installed == 'false' }}
+      if: ${{ steps.info.outputs.bin-installed == 'false' }}
       id: install-wspace
       run: |
         ./build.${{ runner.os == 'Windows' && 'bat' || 'sh' }}
