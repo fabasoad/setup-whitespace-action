@@ -76,7 +76,8 @@ runs:
       run: |
         ./build.${{ runner.os == 'Windows' && 'bat' || 'sh' }}
         echo "WHITESPACE_JAR_PATH=$(pwd)/Whitespace.jar" >> "$GITHUB_ENV"
-        cp $GITHUB_WORKSPACE/src/wspace ./bin
+        mkdir -p bin
+        cp "$GITHUB_WORKSPACE/src/wspace" ./bin
         echo "$(pwd)/bin" >> "$GITHUB_PATH"
       shell: sh
       working-directory: ${{ steps.info.outputs.bin-path }}
