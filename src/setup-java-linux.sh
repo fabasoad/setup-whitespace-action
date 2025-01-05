@@ -16,15 +16,15 @@ main() {
       apk add "zulu${java_version}-jdk"
 
       java_home="/usr/lib/jvm/zulu${java_version}-ca"
+      echo "JAVA_HOME=${java_home}" >> "$GITHUB_ENV"
+      echo "${java_home}/bin" >> "$GITHUB_PATH"
     else
       apt update
-      apt install openjdk-${java_version}-jdk -y
-      java_home="/usr/lib/jvm/java-${java_version}-openjdk-amd64"
+      apt install wget -y
+      wget https://download.oracle.com/java/23/latest/jdk-23_linux-x64_bin.deb
+      dpkg -i jdk-23_linux-x64_bin.deb
     fi
   fi
-
-  echo "JAVA_HOME=${java_home}" >> "$GITHUB_ENV"
-  echo "${java_home}/bin" >> "$GITHUB_PATH"
 }
 
 main "$@"
