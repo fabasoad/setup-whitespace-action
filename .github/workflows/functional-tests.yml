@@ -20,14 +20,44 @@ defaults:
     shell: sh
 
 jobs:
-  run-script:
-    name: Run script
+  setup-whitespace:
+    name: Setup whitespace
     runs-on: ${{ matrix.os }}-latest
     timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
         os: ["ubuntu", "macos", "windows"]
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+      - name: Setup Whitespace
+        id: setup-whitespace
+        uses: ./
+      - name: Test action completion
+        run: |
+          test_equal() {
+            if [ "${2}" != "${3}" ]; then
+              echo "::error title=${1}::Expected: ${3}. Actual: ${2}."
+              exit 1
+            fi
+          }
+          test_equal "wspace should be installed" \
+            "${{ steps.setup-whitespace.outputs.installed }}" \
+            "true"
+      - name: Validate script
+        run: |
+          [ "$(wspace helloworld.ws)" = "Hello, World!" ] || exit 1;
+  setup-whitespace-in-container:
+    name: Setup whitespace in container (${{ matrix.image }}, latest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    container:
+      image: ${{ matrix.image }}:latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ["alpine", "ubuntu"]
     steps:
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v4
