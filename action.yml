@@ -12,6 +12,16 @@ inputs:
       Otherwise, skips installation.
     default: "false"
     required: false
+  github-token:
+    description: |
+      GitHub token that is used to send requests to GitHub API such as getting
+      latest release. Defaults to the token provided by GitHub Actions environment.
+    required: false
+    default: ${{ github.token }}
+outputs:
+  installed:
+    description: Whether wspace was installed or not.
+    value: "${{ steps.install-wspace.outcome == 'success' }}"
 runs:
   using: "composite"
   steps:
@@ -22,46 +32,55 @@ runs:
       run: ./validate-inputs.sh "${INPUT_FORCE}"
       shell: sh
       working-directory: ${{ github.action_path }}/src
-    - name: Prepare metadata
-      id: metadata
+
+    - name: Collect info
+      id: info
       env:
         INPUT_FORCE: "${{ inputs.force }}"
-      run: |
-        to_install="false"
-        if [ "${INPUT_FORCE}" = "true" ] || ! command -v wspace >/dev/null 2>&1; then
-          to_install="true"
-        fi
-        echo "to-install=${to_install}" >> "$GITHUB_OUTPUT"
-
-        java_installed="false"
-        if command -v java >/dev/null 2>&1; then
-          java_installed="true"
-        fi
-        echo "java-installed=${java_installed}" >> "$GITHUB_OUTPUT"
+      run: ./collect-info.sh "${INPUT_FORCE}"
       shell: sh
-    - name: Setup Java
-      if: ${{ steps.metadata.outputs.java-installed == 'false' }}
+      working-directory: "${{ github.action_path }}/src"
+
+    - name: Setup Java (Linux)
+      if: (steps.info.outputs.bin-installed == 'false'
+        && steps.info.outputs.java-installed == 'false'
+        && runner.os == 'Linux')
+      env:
+        JAVA_VERSION: "23"
+      run: ./setup-java-linux.sh "${JAVA_VERSION}"
+      shell: sh
+      working-directory: "${{ github.action_path }}/src"
+
+    - name: Setup Java (Windows, macOS)
+      if: (steps.info.outputs.bin-installed == 'false'
+        && steps.info.outputs.java-installed == 'false'
+        && runner.os != 'Linux')
       uses: actions/setup-java@v4
       with:
-        java-version: "24"
-        distribution: "temurin"
+        distribution: "zulu"
+        java-version: "23"
         java-package: "jre"
-    - name: Checkout Romejanic/Whitespace
-      if: ${{ steps.metadata.outputs.to-install == 'true' }}
+        token: "${{ inputs.github-token }}"
+
+    - name: Download wspace
+      if: ${{ steps.metadata.outputs.bin-installed == 'false' }}
       uses: actions/checkout@v4
       with:
         repository: "Romejanic/Whitespace"
-        path: "Romejanic/Whitespace"
-    - name: Prepare script
-      if: ${{ steps.metadata.outputs.to-install == 'true' }}
+        fetch-depth: 1
+        path: "${{ steps.info.outputs.bin-dir }}"
+
+    - name: Install wspace
+      if: ${{ steps.metadata.outputs.bin-installed == 'false' }}
+      id: install-wspace
       run: |
-        if [ "${RUNNER_OS}" = "Windows" ]; then
-          ./build.bat
-        else
-          ./build.sh
-        fi
+        ./build.${{ runner.os == 'Windows' && 'bat' || 'sh' }}
         echo "WHITESPACE_JAR_PATH=$(pwd)/Whitespace.jar" >> "$GITHUB_ENV"
-        cp ../../src/wspace ./bin
+        cp $GITHUB_WORKSPACE/src/wspace ./bin
         echo "$(pwd)/bin" >> "$GITHUB_PATH"
       shell: sh
-      working-directory: "${{ github.workspace }}/Romejanic/Whitespace"
+      working-directory: ${{ steps.info.outputs.bin-path }}
+
+    - name: Print version
+      run: wspace --version
+      shell: sh

@@ -2,8 +2,7 @@
 
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
 ![GitHub release](https://img.shields.io/github/v/release/fabasoad/setup-whitespace-action?include_prereleases)
-![functional-tests-local](https://github.com/fabasoad/setup-whitespace-action/actions/workflows/functional-tests-local.yml/badge.svg)
-![functional-tests-remote](https://github.com/fabasoad/setup-whitespace-action/actions/workflows/functional-tests-remote.yml/badge.svg)
+![functional-tests](https://github.com/fabasoad/setup-whitespace-action/actions/workflows/functional-tests.yml/badge.svg)
 ![security](https://github.com/fabasoad/setup-whitespace-action/actions/workflows/security.yml/badge.svg)
 ![linting](https://github.com/fabasoad/setup-whitespace-action/actions/workflows/linting.yml/badge.svg)
 
@@ -25,14 +24,22 @@ programming language [interpreter](https://github.com/Romejanic/Whitespace).
 ```yaml
 - uses: fabasoad/setup-whitespace-action@v1
   with:
-    # (Optional) If "true" it installs swipl even if it is already installed on
+    # (Optional) If "true" it installs wspace even if it is already installed on
     # a runner. Otherwise, skips installation. Defaults to false.
     force: "false"
+    # (Optional) GitHub token that is used to send requests to GitHub API such
+    # as installing Java. Defaults to the token provided by GitHub Actions.
+    # environment.
+    github-token: "${{ github.token }}"
 ```
 
 ## Outputs
 
-None.
+<!-- prettier-ignore-start -->
+| Name      | Description                         | Example |
+|-----------|-------------------------------------|---------|
+| installed | Whether wspace was installed or not | `true`  |
+<!-- prettier-ignore-end -->
 
 ## Example usage
 
