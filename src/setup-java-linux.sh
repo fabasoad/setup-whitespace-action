@@ -23,6 +23,7 @@ main() {
 
   echo "JAVA_HOME=${java_home}" >> "$GITHUB_ENV"
   echo "${java_home}/bin" >> "$GITHUB_PATH"
+  ls -la "${java_home}/bin"
 }
 
 main "$@"

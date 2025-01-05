@@ -14,8 +14,8 @@ inputs:
     required: false
   github-token:
     description: |
-      GitHub token that is used to send requests to GitHub API such as getting
-      latest release. Defaults to the token provided by GitHub Actions environment.
+      GitHub token that is used to send requests to GitHub API. Defaults to the
+      token provided by GitHub Actions environment.
     required: false
     default: ${{ github.token }}
 outputs:
@@ -76,7 +76,6 @@ runs:
       run: |
         ./build.${{ runner.os == 'Windows' && 'bat' || 'sh' }}
         echo "WHITESPACE_JAR_PATH=$(pwd)/Whitespace.jar" >> "$GITHUB_ENV"
-        mkdir -p bin
         cp "$GITHUB_WORKSPACE/src/wspace" ./bin
         echo "$(pwd)/bin" >> "$GITHUB_PATH"
       shell: sh

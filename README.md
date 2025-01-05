@@ -27,9 +27,8 @@ programming language [interpreter](https://github.com/Romejanic/Whitespace).
     # (Optional) If "true" it installs wspace even if it is already installed on
     # a runner. Otherwise, skips installation. Defaults to false.
     force: "false"
-    # (Optional) GitHub token that is used to send requests to GitHub API such
-    # as installing Java. Defaults to the token provided by GitHub Actions.
-    # environment.
+    # (Optional) GitHub token that is used to send requests to GitHub API.
+    # Defaults to the token provided by GitHub Actions environment.
     github-token: "${{ github.token }}"
 ```
 
