@@ -21,8 +21,8 @@ main() {
     else
       apt update
       apt install wget -y
-      wget https://download.oracle.com/java/23/latest/jdk-23_linux-x64_bin.deb
-      dpkg -i jdk-23_linux-x64_bin.deb
+      wget -q "https://download.oracle.com/java/${java_version}/latest/jdk-${java_version}_linux-x64_bin.deb"
+      dpkg -i "jdk-${java_version}_linux-x64_bin.deb"
     fi
   fi
 }
