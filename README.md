@@ -61,3 +61,7 @@ jobs:
       - name: Run script
         run: wspace hello-world.ws
 ```
+
+## Contributions
+
+![Alt](https://repobeats.axiom.co/api/embed/de85087d6bfdec06350fc6803fee9c1b435a0b11.svg "Repobeats analytics image")
