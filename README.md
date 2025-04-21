@@ -19,6 +19,10 @@ programming language [interpreter](https://github.com/Romejanic/Whitespace).
 | macOS   | :white_check_mark: |
 <!-- prettier-ignore-end -->
 
+## Prerequisites
+
+None.
+
 ## Inputs
 
 ```yaml

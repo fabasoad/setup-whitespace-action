@@ -31,6 +31,15 @@ main() {
 
   bin_path="$GITHUB_WORKSPACE/${bin_dir}"
   echo "bin-path=${bin_path}" >> "$GITHUB_OUTPUT"
+
+  runner_os="${RUNNER_OS}"
+  if [ "${runner_os}" = "Linux" ]; then
+    os=$(grep "^ID=" "/etc/os-release" | cut -d '=' -f 2)
+    if [ "${os}" = "alpine" ]; then
+      runner_os="Alpine"
+    fi
+  fi
+  echo "runner-os=${runner_os}" >> "$GITHUB_OUTPUT"
 }
 
 main "$@"
