@@ -60,7 +60,7 @@ runs:
       with:
         distribution: "zulu"
         java-version: "23"
-        java-package: "jre"
+        java-package: "jdk"
         token: "${{ inputs.github-token }}"
 
     - name: Download wspace
