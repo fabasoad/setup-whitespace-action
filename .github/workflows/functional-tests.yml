@@ -24,17 +24,23 @@ jobs:
     name: Setup whitespace
     runs-on: ${{ matrix.os }}-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
         os: ["ubuntu", "macos", "windows"]
     steps:
       - name: Checkout ${{ github.repository }}
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: "false"
       - name: Setup Whitespace
         id: setup-whitespace
         uses: ./
       - name: Test action completion
+        env:
+          STEP_SETUP_WHITESPACE_OUTPUT_INSTALLED: "${{ steps.setup-whitespace.outputs.installed }}"
         run: |
           test_equal() {
             if [ "${2}" != "${3}" ]; then
@@ -43,7 +49,7 @@ jobs:
             fi
           }
           test_equal "wspace should be installed" \
-            "${{ steps.setup-whitespace.outputs.installed }}" \
+            "${STEP_SETUP_WHITESPACE_OUTPUT_INSTALLED}" \
             "true"
       - name: Validate script
         run: |
@@ -52,6 +58,8 @@ jobs:
     name: Setup whitespace in container (${{ matrix.image }}, latest)
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
     container:
       image: ${{ matrix.image }}:latest
     strategy:
@@ -60,11 +68,15 @@ jobs:
         image: ["alpine", "ubuntu"]
     steps:
       - name: Checkout ${{ github.repository }}
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: "false"
       - name: Setup Whitespace
         id: setup-whitespace
         uses: ./
       - name: Test action completion
+        env:
+          STEP_SETUP_WHITESPACE_OUTPUT_INSTALLED: "${{ steps.setup-whitespace.outputs.installed }}"
         run: |
           test_equal() {
             if [ "${2}" != "${3}" ]; then
@@ -73,7 +85,7 @@ jobs:
             fi
           }
           test_equal "wspace should be installed" \
-            "${{ steps.setup-whitespace.outputs.installed }}" \
+            "${STEP_SETUP_WHITESPACE_OUTPUT_INSTALLED}" \
             "true"
       - name: Validate script
         run: |
@@ -82,13 +94,17 @@ jobs:
     name: Test force
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
         force: ["true", "false"]
     steps:
       - name: Checkout ${{ github.repository }}
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: "false"
       - name: Setup Whitespace 1
         id: setup-whitespace-1
         uses: ./
@@ -98,6 +114,9 @@ jobs:
         with:
           force: ${{ matrix.force }}
       - name: Test action completion
+        env:
+          STEP_SETUP_WHITESPACE_1_OUTPUT_INSTALLED: "${{ steps.setup-whitespace-1.outputs.installed }}"
+          STEP_SETUP_WHITESPACE_2_OUTPUT_INSTALLED: "${{ steps.setup-whitespace-2.outputs.installed }}"
         run: |
           test_equal() {
             if [ "${2}" != "${3}" ]; then
@@ -106,8 +125,8 @@ jobs:
             fi
           }
           test_equal "Wrong \"installed\" output from setup-whitespace-1" \
-            "${{ steps.setup-whitespace-1.outputs.installed }}" \
+            "${STEP_SETUP_WHITESPACE_1_OUTPUT_INSTALLED}" \
             "true"
           test_equal "Wrong \"installed\" output from setup-whitespace-2" \
-            "${{ steps.setup-whitespace-2.outputs.installed }}" \
+            "${STEP_SETUP_WHITESPACE_2_OUTPUT_INSTALLED}" \
             "${{ matrix.force }}"
